@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>chatapp</title>
+  <style type="text/css">
+  @import url('https://fonts.googleapis.com/css?family=Revalia');
+	input {
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+			}
+
+	input:focus {
+	    border:solid 2px orange;
+	    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	}
+
+	button{
+		font-family: 'Revalia', cursive;
+		background-color: #FFB6C1;
+		color: white;
+		font-width: bold;
+
+	}
+
+	div{
+		font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	}
+  	
+  </style>
+</head>
+<body>
+  <input type="text" id="msg_input" style="width:200px;">
+  <button onclick="publishMessage();">CHAT START(*'ω'*)</button>
+  <div id="msg"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+  //This area is for a client side.
+
+    // define events
+    var socketio = io.connect('http://localhost:8080');
+
+    socketio.on("connected", function(name) {});
+    socketio.on("publish", function (data) { addMessage(data.value); });
+
+   //define functions
+    function start(name) {
+      socketio.emit("connected", name);
+    }
+
+    function publishMessage() {
+      var textInput = document.getElementById('msg_input');
+      var msg = "[" + myName + "] " + textInput.value;
+      socketio.emit("publish", {value: msg});
+      textInput.value = '';
+    }
+
+    function addMessage (msg) {
+      var domMeg = document.createElement('div');
+      domMeg.innerHTML = new Date().toLocaleTimeString() + ' ' + msg;
+      msgArea.appendChild(domMeg);
+    }
+
+    //start 
+    var msgArea = document.getElementById("msg");
+    var myName = Math.floor(Math.random()*100);
+    addMessage("You " + myName + " enter the chat room.");
+    start(myName);
+  </script>
+</body>
+</html>
